@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reyan Trades AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+        }
+        .neon-text {
+            color: #00f0ff;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        }
+    </style>
+</head>
+<body class="p-4 flex flex-col justify-between h-screen max-w-md mx-auto">
+
+    <div class="text-center mt-4">
+        <h1 class="text-2xl font-black tracking-wider uppercase neon-text">Signal AI</h1>
+        <p class="text-xs text-gray-400 mt-1">Advanced Market Analysis Bot</p>
+    </div>
+
+    <div class="bg-[#161b22] rounded-2xl p-5 my-auto neon-glow flex flex-col space-y-5">
+        <div>
+            <label class="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-2">Currency Pair</label>
+            <select id="pairSelect" class="w-full bg-[#21262d] text-white border border-gray-700 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
+                <option value="USD/CAD-OTC">USD/CAD (OTC)</option>
+                <option value="EUR/USD-OTC">EUR/USD (OTC)</option>
+                <option value="GBP/USD">GBP/USD</option>
+                <option value="BTC/USDT">BTC/USDT</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-2">Timeframe</label>
+            <select id="timeframeSelect" class="w-full bg-[#21262d] text-white border border-gray-700 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
+                <option value="15s">15 Seconds</option>
+                <option value="1m">1 Minute</option>
+                <option value="5m">5 Minutes</option>
+            </select>
+        </div>
+
+        <div id="outputArea" class="hidden flex flex-col items-center justify-center py-4 border-t border-gray-800">
+            <div id="loader" class="flex flex-col items-center space-y-3">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00f0ff]"></div>
+                <p class="text-sm text-cyan-400 animate-pulse font-medium">Calculating entry point...</p>
+            </div>
+
+            <div id="result" class="hidden w-full text-center space-y-4">
+                <div class="bg-[#21262d] p-3 rounded-xl flex justify-between items-center text-sm">
+                    <span class="text-gray-400">Accuracy Rate:</span>
+                    <span id="accuracyVal" class="font-bold text-emerald-400">82%</span>
+                </div>
+                
+                <div class="py-2">
+                    <span class="block text-xs uppercase text-gray-400 font-bold tracking-widest mb-1">Direction</span>
+                    <span id="directionVal" class="text-4xl font-black tracking-wide">UP</span>
+                </div>
+
+                <div class="bg-[#21262d] p-3 rounded-xl flex justify-between items-center text-sm">
+                    <span class="text-gray-400">Trend Strength:</span>
+                    <span id="strengthVal" class="font-bold text-[#00f0ff]">Strong</span>
+                </div>
+            </div>
+        </div>
+
+        <button id="signalBtn" onclick="requestSignal()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold p-4 rounded-xl transition duration-200 active:scale-98 shadow-lg shadow-cyan-500/20">
+            Get Signal
+        </button>
+    </div>
+
+    <div class="text-center mb-4 px-4">
+        <p class="text-[10px] text-gray-500 leading-relaxed">
+            Disclaimer: Automated signals are generated using simulated metrics for educational visualization purposes. Trading involves capital risk.
+        </p>
+    </div>
+
+    <script>
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        function requestSignal() {
+            const outputArea = document.getElementById('outputArea');
+            const loader = document.getElementById('loader');
+            const result = document.getElementById('result');
+            const btn = document.getElementById('signalBtn');
+
+            outputArea.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            result.classList.add('hidden');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                result.classList.remove('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+
+                const rand = Math.random();
+                const directionVal = document.getElementById('directionVal');
+                const accuracyVal = document.getElementById('accuracyVal');
+                const strengthVal = document.getElementById('strengthVal');
+
+                if (rand > 0.55) {
+                    directionVal.innerText = "CALL / UP";
+                    directionVal.className = "text-4xl font-black tracking-wide text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]";
+                    accuracyVal.innerText = Math.floor(Math.random() * (88 - 74) + 74) + "%";
+                    strengthVal.innerText = "Strong (Bullish)";
+                    strengthVal.className = "font-bold text-emerald-400";
+                } else if (rand > 0.1) {
+                    directionVal.innerText = "PUT / DOWN";
+                    directionVal.className = "text-4xl font-black tracking-wide text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]";
+                    accuracyVal.innerText = Math.floor(Math.random() * (86 - 72) + 72) + "%";
+                    strengthVal.innerText = "Strong (Bearish)";
+                    strengthVal.className = "font-bold text-rose-400";
+                } else {
+                    directionVal.innerText = "SKIP TACTIC";
+                    directionVal.className = "text-3xl font-black tracking-wide text-amber-400";
+                    accuracyVal.innerText = "--";
+                    strengthVal.innerText = "Unstable Market Volatility";
+                    strengthVal.className = "font-bold text-amber-400";
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
 
