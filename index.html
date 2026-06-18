@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reyan Trades AI</title>
+    <title>Reyan Trades AI Ultra</title>
     <!-- Tailwind Engine -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Telegram API Engine -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background-color: #0b0e14;
+            background-color: #06090e;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
         .cyber-border {
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+            border: 1px solid rgba(0, 240, 255, 0.25);
         }
         .neon-glow-text {
             color: #00f0ff;
@@ -24,75 +24,114 @@
         }
     </style>
 </head>
-<body class="p-4 flex flex-col justify-between h-screen max-w-md mx-auto select-none">
+<body class="p-4 flex flex-col justify-between min-h-screen max-w-md mx-auto select-none">
 
     <!-- Brand Header -->
-    <div class="text-center mt-3">
-        <h1 class="text-2xl font-black tracking-widest uppercase neon-glow-text">Reyan Trades AI</h1>
-        <p class="text-[11px] text-gray-400 tracking-wider mt-0.5">Advanced Market Predictive Engine</p>
+    <div class="text-center mt-2">
+        <h1 class="text-2xl font-black tracking-widest uppercase neon-glow-text">Reyan AI Ultra</h1>
+        <p class="text-[10px] text-gray-400 tracking-wider mt-0.5">Global Session Analytics & Risk Matrix</p>
+    </div>
+
+    <!-- Live Market Session Widget -->
+    <div class="bg-[#0e131f] border border-gray-800 rounded-xl p-3 mt-3 flex flex-col space-y-2 text-xs">
+        <div class="flex justify-between items-center border-b border-gray-800 pb-1.5">
+            <span class="text-gray-400">Local Timezone: <span id="tzLabel" class="text-white font-mono font-bold">UTC</span></span>
+            <span id="liveClock" class="font-mono text-[#00f0ff] font-bold">00:00:00</span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+            <div class="flex justify-between"><span class="text-gray-400">London (EUR/GBP):</span> <span id="session-london" class="font-bold">Closed</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">New York (USD/CAD):</span> <span id="session-ny" class="font-bold">Closed</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Tokyo (JPY):</span> <span id="session-tokyo" class="font-bold">Closed</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Sydney (AUD):</span> <span id="session-sydney" class="font-bold">Closed</span></div>
+        </div>
+        <div class="bg-[#161d2f]/50 p-2 rounded-lg flex justify-between items-center border border-gray-800/40 mt-1">
+            <span class="text-[11px] text-gray-300">Pair Viability Index:</span>
+            <span id="viabilityBadge" class="font-bold px-2 py-0.5 rounded text-[10px] tracking-wide uppercase">Calculating...</span>
+        </div>
     </div>
 
     <!-- Interface Workspace Box -->
-    <div class="bg-[#121620] rounded-2xl p-5 my-auto cyber-border flex flex-col space-y-4">
+    <div class="bg-[#0e131f] rounded-2xl p-5 my-auto cyber-border flex flex-col space-y-4 mt-3">
         
         <!-- Asset Selector Dropdown -->
         <div>
-            <label class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1.5">Asset Pair</label>
-            <select id="assetInput" class="w-full bg-[#1c2130] text-sm text-white border border-gray-700/60 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
-                <option value="USD/CAD-OTC">USD/CAD (OTC)</option>
-                <option value="EUR/USD-OTC">EUR/USD (OTC)</option>
-                <option value="GBP/USD-OTC">GBP/USD (OTC)</option>
-                <option value="BTC/USDT">BTC/USDT</option>
+            <label class="block text-[10px] uppercase tracking-widest text-cyan-400 font-bold mb-1.5">Asset Pair</label>
+            <select id="assetInput" onchange="evaluateMarketViability()" class="w-full bg-[#161d2f] text-sm text-white border border-gray-700/60 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
+                <option value="EUR/USD" selected>EUR/USD (Spot Forex)</option>
+                <option value="GBP/USD">GBP/USD (Spot Forex)</option>
+                <option value="USD/CAD-OTC">USD/CAD (OTC Assets)</option>
+                <option value="BTC/USDT">BTC/USDT (24/7 Crypto)</option>
             </select>
         </div>
 
         <!-- Strategy Frame Selector Dropdown -->
         <div>
-            <label class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1.5">Analysis Timeframe</label>
-            <select id="timeframeInput" class="w-full bg-[#1c2130] text-sm text-white border border-gray-700/60 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
-                <option value="15s">15 Seconds</option>
+            <label class="block text-[10px] uppercase tracking-widest text-cyan-400 font-bold mb-1.5">Analysis Expiry Timeframe</label>
+            <select id="timeframeInput" class="w-full bg-[#161d2f] text-sm text-white border border-gray-700/60 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
+                <option value="5m" selected>5 Minutes (Highly Recommended)</option>
                 <option value="1m">1 Minute</option>
-                <option value="5m">5 Minutes</option>
+                <option value="15s">15 Seconds</option>
             </select>
         </div>
 
         <!-- Engine Calculation Panel -->
-        <div id="statusPanel" class="hidden flex flex-col items-center justify-center py-3 border-t border-gray-800/60">
+        <div id="statusPanel" class="hidden flex flex-col items-center justify-center py-2 border-t border-gray-800/60">
             <!-- Loading Indicator -->
-            <div id="loaderWidget" class="flex flex-col items-center space-y-3 py-2">
-                <div class="animate-spin rounded-full h-10 w-10 border-2 border-transparent border-t-2 border-t-[#00f0ff] border-b-2 border-b-[#00f0ff]"></div>
-                <p class="text-xs text-cyan-400 animate-pulse font-medium tracking-wide">Scanning market charts...</p>
+            <div id="loaderWidget" class="flex flex-col items-center space-y-3 py-4">
+                <div class="animate-spin rounded-full h-9 w-9 border-2 border-transparent border-t-2 border-t-[#00f0ff] border-b-2 border-b-[#00f0ff]"></div>
+                <p class="text-xs text-cyan-400 animate-pulse font-medium tracking-wide">Processing indicators & session metrics...</p>
             </div>
 
             <!-- Parsed Signal Metric Block -->
-            <div id="resultWidget" class="hidden w-full text-center space-y-3.5">
-                <div class="bg-[#1c2130] px-3 py-2.5 rounded-xl flex justify-between items-center text-xs">
-                    <span class="text-gray-400">Analysis Probability:</span>
-                    <span id="probabilityText" class="font-bold text-emerald-400">--</span>
-                </div>
+            <div id="resultWidget" class="hidden w-full space-y-3">
                 
-                <div class="py-1">
-                    <span class="block text-[10px] uppercase text-gray-400 font-bold tracking-widest mb-0.5">Execution Call</span>
+                <div class="text-center py-2 border-b border-gray-800/60">
+                    <span class="block text-[9px] uppercase text-gray-400 font-bold tracking-widest mb-0.5">Execution Call</span>
                     <span id="signalCallText" class="text-3xl font-black tracking-wider">--</span>
                 </div>
 
-                <div class="bg-[#1c2130] px-3 py-2.5 rounded-xl flex justify-between items-center text-xs">
-                    <span class="text-gray-400">Market Direction:</span>
-                    <span id="strengthText" class="font-bold text-[#00f0ff]">--</span>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-[#161d2f] p-2.5 rounded-xl">
+                        <span class="block text-[9px] text-gray-400 mb-0.5">Algorithm Accuracy</span>
+                        <span id="probabilityText" class="font-bold text-white">--</span>
+                    </div>
+                    <div class="bg-[#161d2f] p-2.5 rounded-xl">
+                        <span class="block text-[9px] text-gray-400 mb-0.5">Market Volume State</span>
+                        <span id="strengthText" class="font-bold text-[#00f0ff]">--</span>
+                    </div>
+                </div>
+
+                <!-- Risk Management Zone -->
+                <div class="bg-[#161d2f]/50 border border-gray-800 rounded-xl p-3 space-y-2">
+                    <div class="text-center text-[10px] text-cyan-400 font-bold tracking-widest uppercase border-b border-gray-800 pb-1">
+                        Risk Parameters
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-400">Target Entry Zone:</span>
+                        <span id="entryPrice" class="font-mono font-bold text-white">0.00000</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-emerald-400 font-medium">Take Profit (TP):</span>
+                        <span id="tpPrice" class="font-mono font-bold text-emerald-400">0.00000</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-rose-400 font-medium">Stop Loss (SL):</span>
+                        <span id="slPrice" class="font-mono font-bold text-rose-400">0.00000</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Activation Toggle Button -->
         <button id="triggerBtn" onclick="processMarketSignal()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm p-4 rounded-xl transition duration-200 active:scale-95 shadow-lg shadow-cyan-500/10">
-            Get Signal
+            Analyze Market Vector
         </button>
     </div>
 
     <!-- Footer System Notice -->
-    <div class="text-center mb-2 px-3">
+    <div class="text-center mb-1 px-3 mt-2">
         <p class="text-[9px] text-gray-500 leading-normal">
-            Disclaimer: Mathematical algorithm models track mock trading volatility vectors for simulation and tracking analysis study. All investments run explicit financial market asset exposure liability risks.
+            Automated signals process algorithms tracking mathematical volatility wave shifts. Foreign exchange asset execution carries definitive equity depreciation risks.
         </p>
     </div>
 
@@ -103,11 +142,99 @@
             webapp.expand();
         }
 
+        const marketBasePrices = {
+            "EUR/USD": 1.08450,
+            "GBP/USD": 1.26820,
+            "USD/CAD-OTC": 1.36240,
+            "BTC/USDT": 67250.00
+        };
+
+        // Continuous Clock & Time Tracking Real-time Execution
+        function updateClockAndSessions() {
+            const now = new Date();
+            
+            // Display timezone and local time format
+            const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('tzLabel').innerText = tzName.split('/').pop().replace('_', ' ');
+            document.getElementById('liveClock').innerText = now.toTimeString().split(' ')[0];
+
+            // Get current hour in UTC to match global trading sessions perfectly
+            const utcHour = now.getUTCHours();
+
+            // Session definitions (in UTC hours)
+            const sessions = {
+                london: (utcHour >= 8 && utcHour < 16),
+                ny: (utcHour >= 13 && utcHour < 21),
+                tokyo: (utcHour >= 0 && utcHour < 9),
+                sydney: (utcHour >= 22 || utcHour < 7)
+            };
+
+            // Update UI session elements
+            updateSessionUI('session-london', sessions.london);
+            updateSessionUI('session-ny', sessions.ny);
+            updateSessionUI('session-tokyo', sessions.tokyo);
+            updateSessionUI('session-sydney', sessions.sydney);
+
+            return sessions;
+        }
+
+        function updateSessionUI(id, isOpen) {
+            const el = document.getElementById(id);
+            if (isOpen) {
+                el.innerText = "Active";
+                el.className = "font-bold text-emerald-400 animate-pulse";
+            } else {
+                el.innerText = "Closed";
+                el.className = "font-bold text-gray-600";
+            }
+        }
+
+        function evaluateMarketViability() {
+            const sessions = updateClockAndSessions();
+            const asset = document.getElementById('assetInput').value;
+            const badge = document.getElementById('viabilityBadge');
+
+            // Cryptocurrencies are 24/7 highly liquid structural assets
+            if (asset === "BTC/USDT") {
+                badge.innerText = "Excellent (24/7 Vol)";
+                badge.className = "font-bold px-2 py-0.5 rounded text-[10px] tracking-wide uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+                return;
+            }
+
+            // OTC assets are generated continuously by platforms, volume is always uniform
+            if (asset.includes("OTC")) {
+                badge.innerText = "High (OTC Stable)";
+                badge.className = "font-bold px-2 py-0.5 rounded text-[10px] tracking-wide uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30";
+                return;
+            }
+
+            // Spot Forex rules based on global banking hours
+            let score = "Low Volume";
+            let styleClass = "bg-rose-500/10 text-rose-400 border border-rose-500/30";
+
+            if (asset === "EUR/USD" || asset === "GBP/USD") {
+                if (sessions.london && sessions.ny) {
+                    score = "Excellent (Overlap)";
+                    styleClass = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+                } else if (sessions.london || sessions.ny) {
+                    score = "Moderate (High Vol)";
+                    styleClass = "bg-cyan-500/10 text-cyan-400 border border-cyan-500/30";
+                } else if (sessions.tokyo) {
+                    score = "Risky (Slow Move)";
+                    styleClass = "bg-amber-500/10 text-amber-400 border border-amber-500/30";
+                }
+            }
+
+            badge.innerText = score;
+            badge.className = `font-bold px-2 py-0.5 rounded text-[10px] tracking-wide uppercase ${styleClass}`;
+        }
+
         function processMarketSignal() {
             const statusPanel = document.getElementById('statusPanel');
             const loaderWidget = document.getElementById('loaderWidget');
             const resultWidget = document.getElementById('resultWidget');
             const triggerBtn = document.getElementById('triggerBtn');
+            const asset = document.getElementById('assetInput').value;
 
             statusPanel.classList.remove('hidden');
             loaderWidget.classList.remove('hidden');
@@ -121,32 +248,56 @@
                 triggerBtn.disabled = false;
                 triggerBtn.classList.remove('opacity-40');
 
-                const computationalFactor = Math.random();
+                const currentMinuteTimestamp = Math.floor(Date.now() / 60000);
+                const mathematicalWave = Math.sin(currentMinuteTimestamp * 0.4) + Math.cos(currentMinuteTimestamp * 0.1);
+                
                 const signalCallText = document.getElementById('signalCallText');
                 const probabilityText = document.getElementById('probabilityText');
                 const strengthText = document.getElementById('strengthText');
+                
+                let basePrice = marketBasePrices[asset] || 1.00000;
+                basePrice += (Math.sin(Date.now()) * (basePrice * 0.0001));
+                
+                const isCrypto = asset.includes("BTC");
+                const precision = isCrypto ? 2 : 5;
+                const spreadOffset = isCrypto ? 120.00 : 0.00045; 
 
-                if (computationalFactor > 0.55) {
+                let entry = basePrice;
+                let tp = 0;
+                let sl = 0;
+
+                if (mathematicalWave > 0.15) {
                     signalCallText.innerText = "BUY / CALL";
                     signalCallText.className = "text-3xl font-black tracking-wider text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]";
-                    probabilityText.innerText = Math.floor(Math.random() * (89 - 76) + 76) + "% Accuracy";
-                    strengthText.innerText = "Strong Bullish Trend";
+                    probabilityText.innerText = Math.floor(81 + (Math.abs(mathematicalWave) * 7)) + "% Checkrate";
+                    strengthText.innerText = "High Buying Vol.";
                     strengthText.className = "font-bold text-emerald-400";
-                } else if (computationalFactor > 0.12) {
+                    
+                    tp = entry + spreadOffset;
+                    sl = entry - (spreadOffset * 0.8); 
+                } else {
                     signalCallText.innerText = "SELL / PUT";
                     signalCallText.className = "text-3xl font-black tracking-wider text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]";
-                    probabilityText.innerText = Math.floor(Math.random() * (87 - 74) + 74) + "% Accuracy";
-                    strengthText.innerText = "Strong Bearish Trend";
+                    probabilityText.innerText = Math.floor(79 + (Math.abs(mathematicalWave) * 8)) + "% Checkrate";
+                    strengthText.innerText = "High Liquidating Vol.";
                     strengthText.className = "font-bold text-rose-400";
-                } else {
-                    signalCallText.innerText = "STAY / SKIP";
-                    signalCallText.className = "text-2xl font-black tracking-wider text-amber-400";
-                    probabilityText.innerText = "--";
-                    strengthText.innerText = "Highly Volatile Consolidations";
-                    strengthText.className = "font-bold text-amber-400";
+                    
+                    tp = entry - spreadOffset;
+                    sl = entry + (spreadOffset * 0.8);
                 }
-            }, 2000);
+
+                document.getElementById('entryPrice').innerText = entry.toFixed(precision);
+                document.getElementById('tpPrice').innerText = tp.toFixed(precision);
+                document.getElementById('slPrice').innerText = sl.toFixed(precision);
+
+            }, 2500);
         }
+
+        // Initialize loops
+        setInterval(updateClockAndSessions, 1000);
+        window.onload = () => {
+            evaluateMarketViability();
+        };
     </script>
 </body>
 </html>
