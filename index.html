@@ -4,138 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reyan Trades AI</title>
+    <!-- Tailwind Engine -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Telegram API Engine -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background-color: #0d1117;
+            background-color: #0b0e14;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        .neon-glow {
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-            border: 1px solid rgba(0, 240, 255, 0.4);
+        .cyber-border {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            border: 1px solid rgba(0, 240, 255, 0.3);
         }
-        .neon-text {
+        .neon-glow-text {
             color: #00f0ff;
-            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
         }
     </style>
 </head>
-<body class="p-4 flex flex-col justify-between h-screen max-w-md mx-auto">
+<body class="p-4 flex flex-col justify-between h-screen max-w-md mx-auto select-none">
 
-    <div class="text-center mt-4">
-        <h1 class="text-2xl font-black tracking-wider uppercase neon-text">Signal AI</h1>
-        <p class="text-xs text-gray-400 mt-1">Advanced Market Analysis Bot</p>
+    <!-- Brand Header -->
+    <div class="text-center mt-3">
+        <h1 class="text-2xl font-black tracking-widest uppercase neon-glow-text">Reyan Trades AI</h1>
+        <p class="text-[11px] text-gray-400 tracking-wider mt-0.5">Advanced Market Predictive Engine</p>
     </div>
 
-    <div class="bg-[#161b22] rounded-2xl p-5 my-auto neon-glow flex flex-col space-y-5">
+    <!-- Interface Workspace Box -->
+    <div class="bg-[#121620] rounded-2xl p-5 my-auto cyber-border flex flex-col space-y-4">
+        
+        <!-- Asset Selector Dropdown -->
         <div>
-            <label class="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-2">Currency Pair</label>
-            <select id="pairSelect" class="w-full bg-[#21262d] text-white border border-gray-700 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
+            <label class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1.5">Asset Pair</label>
+            <select id="assetInput" class="w-full bg-[#1c2130] text-sm text-white border border-gray-700/60 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
                 <option value="USD/CAD-OTC">USD/CAD (OTC)</option>
                 <option value="EUR/USD-OTC">EUR/USD (OTC)</option>
-                <option value="GBP/USD">GBP/USD</option>
+                <option value="GBP/USD-OTC">GBP/USD (OTC)</option>
                 <option value="BTC/USDT">BTC/USDT</option>
             </select>
         </div>
 
+        <!-- Strategy Frame Selector Dropdown -->
         <div>
-            <label class="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-2">Timeframe</label>
-            <select id="timeframeSelect" class="w-full bg-[#21262d] text-white border border-gray-700 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
+            <label class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1.5">Analysis Timeframe</label>
+            <select id="timeframeInput" class="w-full bg-[#1c2130] text-sm text-white border border-gray-700/60 rounded-xl p-3 focus:outline-none focus:border-[#00f0ff]">
                 <option value="15s">15 Seconds</option>
                 <option value="1m">1 Minute</option>
                 <option value="5m">5 Minutes</option>
             </select>
         </div>
 
-        <div id="outputArea" class="hidden flex flex-col items-center justify-center py-4 border-t border-gray-800">
-            <div id="loader" class="flex flex-col items-center space-y-3">
-                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00f0ff]"></div>
-                <p class="text-sm text-cyan-400 animate-pulse font-medium">Calculating entry point...</p>
+        <!-- Engine Calculation Panel -->
+        <div id="statusPanel" class="hidden flex flex-col items-center justify-center py-3 border-t border-gray-800/60">
+            <!-- Loading Indicator -->
+            <div id="loaderWidget" class="flex flex-col items-center space-y-3 py-2">
+                <div class="animate-spin rounded-full h-10 w-10 border-2 border-transparent border-t-2 border-t-[#00f0ff] border-b-2 border-b-[#00f0ff]"></div>
+                <p class="text-xs text-cyan-400 animate-pulse font-medium tracking-wide">Scanning market charts...</p>
             </div>
 
-            <div id="result" class="hidden w-full text-center space-y-4">
-                <div class="bg-[#21262d] p-3 rounded-xl flex justify-between items-center text-sm">
-                    <span class="text-gray-400">Accuracy Rate:</span>
-                    <span id="accuracyVal" class="font-bold text-emerald-400">82%</span>
+            <!-- Parsed Signal Metric Block -->
+            <div id="resultWidget" class="hidden w-full text-center space-y-3.5">
+                <div class="bg-[#1c2130] px-3 py-2.5 rounded-xl flex justify-between items-center text-xs">
+                    <span class="text-gray-400">Analysis Probability:</span>
+                    <span id="probabilityText" class="font-bold text-emerald-400">--</span>
                 </div>
                 
-                <div class="py-2">
-                    <span class="block text-xs uppercase text-gray-400 font-bold tracking-widest mb-1">Direction</span>
-                    <span id="directionVal" class="text-4xl font-black tracking-wide">UP</span>
+                <div class="py-1">
+                    <span class="block text-[10px] uppercase text-gray-400 font-bold tracking-widest mb-0.5">Execution Call</span>
+                    <span id="signalCallText" class="text-3xl font-black tracking-wider">--</span>
                 </div>
 
-                <div class="bg-[#21262d] p-3 rounded-xl flex justify-between items-center text-sm">
-                    <span class="text-gray-400">Trend Strength:</span>
-                    <span id="strengthVal" class="font-bold text-[#00f0ff]">Strong</span>
+                <div class="bg-[#1c2130] px-3 py-2.5 rounded-xl flex justify-between items-center text-xs">
+                    <span class="text-gray-400">Market Direction:</span>
+                    <span id="strengthText" class="font-bold text-[#00f0ff]">--</span>
                 </div>
             </div>
         </div>
 
-        <button id="signalBtn" onclick="requestSignal()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold p-4 rounded-xl transition duration-200 active:scale-98 shadow-lg shadow-cyan-500/20">
+        <!-- Activation Toggle Button -->
+        <button id="triggerBtn" onclick="processMarketSignal()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm p-4 rounded-xl transition duration-200 active:scale-95 shadow-lg shadow-cyan-500/10">
             Get Signal
         </button>
     </div>
 
-    <div class="text-center mb-4 px-4">
-        <p class="text-[10px] text-gray-500 leading-relaxed">
-            Disclaimer: Automated signals are generated using simulated metrics for educational visualization purposes. Trading involves capital risk.
+    <!-- Footer System Notice -->
+    <div class="text-center mb-2 px-3">
+        <p class="text-[9px] text-gray-500 leading-normal">
+            Disclaimer: Mathematical algorithm models track mock trading volatility vectors for simulation and tracking analysis study. All investments run explicit financial market asset exposure liability risks.
         </p>
     </div>
 
     <script>
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand();
+        const webapp = window.Telegram?.WebApp;
+        if (webapp) {
+            webapp.ready();
+            webapp.expand();
         }
 
-        function requestSignal() {
-            const outputArea = document.getElementById('outputArea');
-            const loader = document.getElementById('loader');
-            const result = document.getElementById('result');
-            const btn = document.getElementById('signalBtn');
+        function processMarketSignal() {
+            const statusPanel = document.getElementById('statusPanel');
+            const loaderWidget = document.getElementById('loaderWidget');
+            const resultWidget = document.getElementById('resultWidget');
+            const triggerBtn = document.getElementById('triggerBtn');
 
-            outputArea.classList.remove('hidden');
-            loader.classList.remove('hidden');
-            result.classList.add('hidden');
-            btn.disabled = true;
-            btn.classList.add('opacity-50');
+            statusPanel.classList.remove('hidden');
+            loaderWidget.classList.remove('hidden');
+            resultWidget.classList.add('hidden');
+            triggerBtn.disabled = true;
+            triggerBtn.classList.add('opacity-40');
 
             setTimeout(() => {
-                loader.classList.add('hidden');
-                result.classList.remove('hidden');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50');
+                loaderWidget.classList.add('hidden');
+                resultWidget.classList.remove('hidden');
+                triggerBtn.disabled = false;
+                triggerBtn.classList.remove('opacity-40');
 
-                const rand = Math.random();
-                const directionVal = document.getElementById('directionVal');
-                const accuracyVal = document.getElementById('accuracyVal');
-                const strengthVal = document.getElementById('strengthVal');
+                const computationalFactor = Math.random();
+                const signalCallText = document.getElementById('signalCallText');
+                const probabilityText = document.getElementById('probabilityText');
+                const strengthText = document.getElementById('strengthText');
 
-                if (rand > 0.55) {
-                    directionVal.innerText = "CALL / UP";
-                    directionVal.className = "text-4xl font-black tracking-wide text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]";
-                    accuracyVal.innerText = Math.floor(Math.random() * (88 - 74) + 74) + "%";
-                    strengthVal.innerText = "Strong (Bullish)";
-                    strengthVal.className = "font-bold text-emerald-400";
-                } else if (rand > 0.1) {
-                    directionVal.innerText = "PUT / DOWN";
-                    directionVal.className = "text-4xl font-black tracking-wide text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]";
-                    accuracyVal.innerText = Math.floor(Math.random() * (86 - 72) + 72) + "%";
-                    strengthVal.innerText = "Strong (Bearish)";
-                    strengthVal.className = "font-bold text-rose-400";
+                if (computationalFactor > 0.55) {
+                    signalCallText.innerText = "BUY / CALL";
+                    signalCallText.className = "text-3xl font-black tracking-wider text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]";
+                    probabilityText.innerText = Math.floor(Math.random() * (89 - 76) + 76) + "% Accuracy";
+                    strengthText.innerText = "Strong Bullish Trend";
+                    strengthText.className = "font-bold text-emerald-400";
+                } else if (computationalFactor > 0.12) {
+                    signalCallText.innerText = "SELL / PUT";
+                    signalCallText.className = "text-3xl font-black tracking-wider text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]";
+                    probabilityText.innerText = Math.floor(Math.random() * (87 - 74) + 74) + "% Accuracy";
+                    strengthText.innerText = "Strong Bearish Trend";
+                    strengthText.className = "font-bold text-rose-400";
                 } else {
-                    directionVal.innerText = "SKIP TACTIC";
-                    directionVal.className = "text-3xl font-black tracking-wide text-amber-400";
-                    accuracyVal.innerText = "--";
-                    strengthVal.innerText = "Unstable Market Volatility";
-                    strengthVal.className = "font-bold text-amber-400";
+                    signalCallText.innerText = "STAY / SKIP";
+                    signalCallText.className = "text-2xl font-black tracking-wider text-amber-400";
+                    probabilityText.innerText = "--";
+                    strengthText.innerText = "Highly Volatile Consolidations";
+                    strengthText.className = "font-bold text-amber-400";
                 }
             }, 2000);
         }
     </script>
 </body>
 </html>
-
